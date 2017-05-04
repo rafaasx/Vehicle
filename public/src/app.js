@@ -217,8 +217,8 @@ app.constant('brandList', [{ id: 1, name: 'Volkswagen' }, { id: 2, name: 'Nissan
     };
 })
 .config(['$locationProvider', function ($locationProvider) {
-        $locationProvider.hashPrefix('');
-    }])
+    $locationProvider.hashPrefix('');
+}])
 // configuração das rotas com os controllers e templates
 .config(function($routeProvider, $locationProvider) {
     $routeProvider
