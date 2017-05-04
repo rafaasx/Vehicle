@@ -25,10 +25,8 @@ server.route({
     path: '/vehicles',
     handler: function (request, reply) {
         connection.query('SELECT * FROM vehicle', function(err, results, fields) {
-            if (!err)
-            reply(results);
-            else
-            reply('Error while performing Query.');
+            if (!err) reply(results);
+            else reply('Error while performing Query.');
         });
     },
     config: {
@@ -47,10 +45,12 @@ server.route({
         connection.query('SELECT * FROM vehicle WHERE id = ?', request.params.id, function(err, results, fields) {
             if (!err)
             {
-                reply(results[0]).code(results.length > 0 ? 200 : 404 );
+                if (results.length > 0)
+                    reply(results[0]).code(200);
+                else
+                    reply({statusCode: 404, error: "Not Found", message: 'Register not found.'}).code(404);
             }
-            else
-            reply('Error while performing Query.');
+            else reply('Error while performing Query.');
         });
     },
     config: {
@@ -66,24 +66,17 @@ server.route({
     method: 'POST',
     path: '/vehicles',
     handler: function (request, reply) {
-        var query = connection.query('SELECT * FROM vehicle WHERE license_plate = ?', request.payload.license_plate, function(err, results, fields) {
-            console.log('1');
+        connection.query('SELECT * FROM vehicle WHERE license_plate = ?', request.payload.license_plate, function(err, results, fields) {
             if (!err)
             {
-                console.log('2');
                 if (results.length == 0) {
                     connection.query('INSERT INTO vehicle SET ?', request.payload, function (error, results, fields) {
-                        console.log('3');
                         if (error) throw error;
                         else reply({ id: results.insertId }).code(201);
                     });
                 }
-                else {
-                    console.log('5');
-                    reply('The license plate ' + request.payload.license_plate + ' already exists.').code(409);
-                }
+                else reply({statusCode: 409, error: "Conflict", message: 'The license plate ' + request.payload.license_plate + ' already exists.'}).code(409);
             }
-            console.log('6' + query.sql);
         });
     },
     config: {
@@ -111,14 +104,9 @@ server.route({
                         else reply({ changedRows :  results.changedRows }).code(200);
                     });
                 }
-                else {
-                    reply().code(404);
-                }
+                else reply({statusCode: 404, error: "Not Found", message: 'Register not found.'}).code(404);
             }
-            else
-            {
-                reply('Error while performing Query.');
-            }
+            else reply('Error while performing Query.');
         });
 
     },
@@ -148,9 +136,7 @@ server.route({
                         else reply({ 'affectedRows' :  results.affectedRows });
                     });
                 }
-                else {
-                    reply().code(404);
-                }
+                else reply({statusCode: 404, error: "Not Found", message: 'Register not found.'}).code(404);
             }
         });
     },

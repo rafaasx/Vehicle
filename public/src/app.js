@@ -42,6 +42,7 @@ app.constant('brandList', [{ id: 1, name: 'Volkswagen' }, { id: 2, name: 'Nissan
     // Trata o erro da API
     var handleError = function(err, callback) {
         $rootScope.hasError = true;
+        console.log(err.data);
         $rootScope.errorMessage = err.data.statusCode + ' - ' + err.data.message;
         return callback(err);
     };
