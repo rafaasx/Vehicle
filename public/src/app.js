@@ -1,4 +1,4 @@
-'use strict';
+// 'use strict';
 
 var app = angular.module('vehicles', ['ngRoute']);
 
@@ -21,6 +21,20 @@ app.constant('brandList', [{ id: 1, name: 'Volkswagen' }, { id: 2, name: 'Nissan
             return callback(null, false);
         }
     };
+})
+
+.directive('convertToNumber', function() {
+  return {
+    require: 'ngModel',
+    link: function(scope, element, attrs, ngModel) {
+      ngModel.$parsers.push(function(val) {
+        return val != null ? parseInt(val, 10) : null;
+      });
+      ngModel.$formatters.push(function(val) {
+        return val != null ? '' + val : null;
+      });
+    }
+  };
 })
 
 .factory('vehicleAPI', function($window, $http, $rootScope) {

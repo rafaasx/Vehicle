@@ -8,7 +8,6 @@
         <div class="clearfix"></div>
     </div>
     <div class="panel-body">
-        {{vehicle}} <br> {{brandList}} <br> {{modelList}}
         <form ng-submit="save()">
             <div class="form-group">
                 <label for="vehicleName">Nome</label>
@@ -20,13 +19,13 @@
             </div>
             <div class="form-group">
                 <label for="vehicleBrand">Marca</label>
-                <select class="form-control" id="vehicleBrand" required ng-disabled="!isEditing" ng-model="vehicle.brand_id">
+                <select class="form-control" id="vehicleBrand" required ng-disabled="!isEditing" ng-model="vehicle.brand_id" convert-to-number>
                     <option ng-repeat="option in brandList" value="{{option.id}}">{{option.name}}</option>
                 </select>
             </div>
             <div class="form-group">
                 <label for="vehicleModel">Modelo</label>
-                <select class="form-control" id="vehicleModel" required ng-disabled="!isEditing" ng-model="vehicle.model_id">
+                <select class="form-control" id="vehicleModel" required ng-disabled="!isEditing" ng-model="vehicle.model_id" convert-to-number>
                     <option ng-repeat="option in modelList | filter:{ brand_id: vehicle.brand_id }" value="{{option.id}}">{{option.name}}</option>
                 </select>
             </div>
