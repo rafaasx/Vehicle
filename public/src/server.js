@@ -8,7 +8,7 @@ var mysql      = require('mysql');
 var connection = mysql.createConnection({
     host     : 'localhost',
     user     : 'root',
-    password : '',
+    password : '172202',
     database : 'vehicle'
 });
 connection.connect(function(err) {
@@ -44,7 +44,7 @@ server.route({
     method: 'GET',
     path: '/vehicles/{id}',
     handler: function (request, reply) {
-        connection.query('SELECT * FROM vehicle WHERE id = ' + request.params.id, function(err, results, fields) {
+        connection.query('SELECT * FROM vehicle WHERE id = ?', request.params.id, function(err, results, fields) {
             if (!err)
             {
                 reply(results[0]).code(results.length > 0 ? 200 : 404 );
@@ -66,9 +66,24 @@ server.route({
     method: 'POST',
     path: '/vehicles',
     handler: function (request, reply) {
-        var query = connection.query('INSERT INTO vehicle SET ?', request.payload, function (error, results, fields) {
-            if (error) throw error;
-            else reply({ id: results.insertId }).code(201);
+        var query = connection.query('SELECT * FROM vehicle WHERE license_plate = ?', request.payload.license_plate, function(err, results, fields) {
+            console.log('1');
+            if (!err)
+            {
+                console.log('2');
+                if (results.length == 0) {
+                    connection.query('INSERT INTO vehicle SET ?', request.payload, function (error, results, fields) {
+                        console.log('3');
+                        if (error) throw error;
+                        else reply({ id: results.insertId }).code(201);
+                    });
+                }
+                else {
+                    console.log('5');
+                    reply('The license plate ' + request.payload.license_plate + ' already exists.').code(409);
+                }
+            }
+            console.log('6' + query.sql);
         });
     },
     config: {
@@ -87,10 +102,9 @@ server.route({
     method: 'PUT',
     path: '/vehicles/{id}',
     handler: function (request, reply) {
-        connection.query('SELECT * FROM vehicle WHERE id = ' + request.params.id, function(err, results, fields) {
+        connection.query('SELECT * FROM vehicle WHERE id = ?', request.params.id, function(err, results, fields) {
             if (!err)
             {
-                console.log(results);
                 if (results.length > 0) {
                     connection.query('UPDATE vehicle SET ? WHERE id = ?', [request.payload, request.params.id], function (error, results, fields) {
                         if (error) throw error;
@@ -125,7 +139,7 @@ server.route({
     method: 'DELETE',
     path: '/vehicles/{id}',
     handler: function (request, reply) {
-        connection.query('SELECT * FROM vehicle WHERE id = ' + request.params.id, function(err, results, fields) {
+        connection.query('SELECT * FROM vehicle WHERE id = ?',  request.params.id, function(err, results, fields) {
             if (!err)
             {
                 if (results.length > 0) {
